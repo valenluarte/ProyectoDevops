@@ -24,8 +24,8 @@ jobs:
         run: |
           set -e
 
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./backend-ventas_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./backend-despachos_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./back-ventas_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./back-despachos_springboot
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest ./BD/BD-Despachos
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest ./BD/BD-Ventas
 
@@ -120,7 +120,7 @@ jobs:
             docker-compose ps
 
             echo "Validando contenedores activos..."
-            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springBoot no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springboot no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-ventas_springboot no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "backend_ventas" || { echo "ERROR: backend_ventas no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "backend_despachos" || { echo "ERROR: backennd_despachos no está activo"; exit 1; }
