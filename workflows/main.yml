@@ -120,7 +120,7 @@ jobs:
             docker-compose ps
 
             echo "Validando contenedores activos..."
-            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springBoot no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springboot no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-ventas_springboot no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "backend_ventas" || { echo "ERROR: backend_ventas no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "backend_despachos" || { echo "ERROR: backennd_despachos no está activo"; exit 1; }
