@@ -72,7 +72,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             docker-compose.prod.yml \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectoDevops/docker-compose.yml
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
 
       - name: Deploy stack in EC2
         run: |
@@ -120,8 +120,8 @@ jobs:
             docker-compose ps
 
             echo "Validando contenedores activos..."
-            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-Despachos_SpringBoot no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-Ventas_SpringBoot no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springBoot no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-ventas_springboot no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "backend_ventas" || { echo "ERROR: backend_ventas no está activo"; exit 1; }
             docker ps --format '{{.Names}}' | grep -q "backend_despachos" || { echo "ERROR: backennd_despachos no está activo"; exit 1; }
 
