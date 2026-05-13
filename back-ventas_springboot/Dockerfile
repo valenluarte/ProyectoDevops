@@ -3,7 +3,7 @@ FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn dependency:go-offline
-COPY src ./src
+COPY src ./Springboot-API-REST/src
 RUN mvn clean package -DskipTests
 
 # ETAPA 2: Ejecución (Runtime) - AQUÍ ESTÁ EL CAMBIO TÉCNICO
