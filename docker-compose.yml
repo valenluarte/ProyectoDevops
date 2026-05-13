@@ -17,7 +17,7 @@ services:
 
   db-Despachos:
     build: ./BD/BD-Despachos
-    container_name: back-Despachos_SpringBoot
+    container_name: back-despachos_springboot
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin123

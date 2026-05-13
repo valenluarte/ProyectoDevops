@@ -135,10 +135,10 @@ jobs:
             curl -f http://localhost:3003/api/despachos/health
 
             echo "Validando conexión a base de datos de ventas..."
-            docker exec back-Ventas_SpringBoot mysql -u root -padmin123 tienda_Ventas -e "SHOW TABLES;"
+            docker exec back-ventas_springboot mysql -u root -padmin123 tienda_ventas -e "SHOW TABLES;"
 
             echo "Validando conexión a base de datos de despachos..."
-            docker exec back-Despachos_SpringBoot mysql -u root -padmin123 tienda_Despachos -e "SHOW TABLES;"
+            docker exec back-despachos_springboot mysql -u root -padmin123 tienda_despachos -e "SHOW TABLES;"
 
             echo "Limpiando imágenes no utilizadas..."
             docker image prune -f
