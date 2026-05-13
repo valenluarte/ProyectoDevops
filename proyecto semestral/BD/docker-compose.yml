@@ -1,0 +1,36 @@
+services:
+  DB-Despachos:
+    build: ./back-Despacho_SpringBoot
+    container_name: back-Despachos_SpringBoot
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: tienda_Despachos
+    ports:
+      - "3307:3306"
+    volumes:
+      - inventario_data:/var/lib/mysql
+    networks:
+      - red-tienda
+
+  DB-Ventas:
+    build: ./back-Ventas_SpringBoot
+    container_name: back-Ventas_SpringBoot
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: tienda_Ventas
+    ports:
+      - "3308:3306"
+    volumes:
+      - ventas_data:/var/lib/mysql
+    networks:
+      - red-tienda
+
+volumes:
+  despacho_data:
+  ventas_data:
+
+networks:
+  red-tienda:
+    driver: bridge
