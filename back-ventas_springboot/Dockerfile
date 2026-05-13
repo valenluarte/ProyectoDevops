@@ -1,7 +1,7 @@
 # ETAPA 1: Construcción (Build)
 FROM maven:3.8.5-openjdk-17 AS build
-WORKDIR /Springboot--API-REST
-COPY /Springboot--API-REST/pom.xml .
+WORKDIR /Springboot-API-REST
+COPY /Springboot-API-REST/pom.xml .
 RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests
 
