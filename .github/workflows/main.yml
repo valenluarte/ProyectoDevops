@@ -24,8 +24,8 @@ jobs:
         run: |
           set -e
 
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./backend-ventas_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./backend-despachos_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./back-ventas_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./back-despachos_springboot
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest ./BD/BD-Despachos
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest ./BD/BD-Ventas
 
