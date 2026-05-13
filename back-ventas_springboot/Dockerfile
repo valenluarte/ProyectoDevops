@@ -6,12 +6,12 @@ COPY Springboot-API-REST/src ./src
 RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests
 
-# ETAPA 2: Ejecución (Runtime) - AQUÍ ESTÁ EL CAMBIO TÉCNICO
+# ETAPA 2: Ejecución (Runtime)
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copiamos el archivo .jar generado en la etapa anterior
-COPY --from=build /app/target/*.jar app.jar
+# CORREGIDO: Cambiar /app/target por /Springboot-API-REST/target
+COPY --from=build /Springboot-API-REST/target/*.jar app.jar
 
 # REQUISITO DE SEGURIDAD: Usuario no root (Ajustado para Alpine)
 RUN addgroup -S devopsgroup && adduser -S devopsuser -G devopsgroup
