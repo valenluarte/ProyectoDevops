@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Base de Datos (Persistencia de datos IE3)
+  db:
+    image: postgres:15-alpine
+    container_name: db_proyecto
+    environment:
+      POSTGRES_USER: user_devops
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: base_datos_app
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - red_interna
+
+  # Backend Ventas (IE6)
+  back-ventas:
+    build: ./back-Ventas_SpringBoot
+    container_name: backend_ventas
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/base_datos_app
+      SPRING_DATASOURCE_USERNAME: user_devops
+      SPRING_DATASOURCE_PASSWORD: password123
+    depends_on:
+      - db
+    networks:
+      - red_interna
+
+  # Backend Despachos (IE6)
+  back-despachos:
+    build: ./back-Despachos_SpringBoot
+    container_name: backend_despachos
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/base_datos_app
+      SPRING_DATASOURCE_USERNAME: user_devops
+      SPRING_DATASOURCE_PASSWORD: password123
+    depends_on:
+      - db
+    networks:
+      - red_interna
+
+  # Frontend (IE5)
+  frontend:
+    build: ./FRONT_DESPACHO
+    container_name: frontend_app
+    ports:
+      - "80:80"
+    depends_on:
+      - back-ventas
+      - back-despachos
+    networks:
+      - red_interna
+
+networks:
+  red_interna:
+    driver: bridge
+
+volumes:
+  db_data:
