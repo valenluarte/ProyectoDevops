@@ -11,7 +11,7 @@ services:
     volumes:
       - inventario_data:/var/lib/mysql
     networks:
-      - red-tienda
+      - red_interna
 
   DB-Ventas:
     build: ./back-Ventas_SpringBoot
@@ -25,7 +25,7 @@ services:
     volumes:
       - ventas_data:/var/lib/mysql
     networks:
-      - red-tienda
+      - red_interna
 
 volumes:
   despacho_data:
