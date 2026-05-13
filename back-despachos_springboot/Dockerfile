@@ -2,6 +2,7 @@
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /Springboot-API-REST-DESPACHO
 COPY /Springboot-API-REST-DESPACHO/pom.xml .
+COPY /Springboot-API-REST-DESPACHO/src .
 RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests
 
