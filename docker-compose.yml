@@ -37,7 +37,7 @@ services:
 
   db-ventas:
     build: ./BD/BD-Ventas
-    container_name: back-Ventas_SpringBoot
+    container_name: back-ventas_springboot
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin123
@@ -57,7 +57,7 @@ services:
 
   # Backend Ventas (IE6)
   back-ventas:
-    build: ./back-Ventas_SpringBoot
+    build: ./back-ventas_springboot
     container_name: backend_ventas
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/base_datos_app
@@ -70,7 +70,7 @@ services:
 
   # Backend Despachos (IE6)
   back-despachos:
-    build: ./back-Despachos_SpringBoot
+    build: ./back-despachos_springboot
     container_name: backend_despachos
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/base_datos_app
