@@ -89,11 +89,11 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} << EOF
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}: << 'EOF'
+            mkdir -p ~/proyectoDevops/BD
+            cd ~/proyectoDevops/BD
 
             set -e
-
-            cd ~/proyectodevops/BD
 
             echo "Validando docker..."
             docker --version
