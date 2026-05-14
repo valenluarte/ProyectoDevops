@@ -56,13 +56,16 @@ jobs:
 
       - name: Create deployment folder in EC2
         run: |
-          set -e
-
-          ssh -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
-            "mkdir -p ~/tienda-videojuegos-backend"
+          for i in {1..5}; do
+            ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -o ConnectTimeout=30 \
+              -o ServerAliveInterval=60 \
+              -o ServerAliveCountMax=3 \
+              ***@*** \
+              "mkdir -p ~/tienda" && break || sleep 10
+          done
 
       - name: Copy docker-compose to EC2
         run: |
