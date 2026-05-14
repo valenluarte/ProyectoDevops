@@ -1,18 +1,6 @@
 version: '3.8'
 
 services:
-  # Base de Datos (Persistencia de datos IE3)
-  db:
-    image: postgres:15-alpine
-    container_name: db_proyecto
-    environment:
-      POSTGRES_USER: user_devops
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: base_datos_app
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - red_interna
 
 
   db-Despachos:
