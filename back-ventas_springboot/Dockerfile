@@ -7,7 +7,7 @@ RUN mvn dependency:go-offline
 RUN mvn clean package -DskipTests
 
 # ETAPA 2: Ejecución (Runtime)
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # CORREGIDO: Cambiar /app/target por /Springboot-API-REST/target
