@@ -93,7 +93,7 @@ jobs:
 
             set -e
 
-            cd ~/proyectoDevops/BD
+            cd ~/proyectodevops/BD
 
             echo "Validando docker..."
             docker --version
