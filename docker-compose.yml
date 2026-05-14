@@ -17,7 +17,7 @@ services:
     build: ./back-ventas_springboot
     container_name: backend_ventas
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/base_datos_app
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-ventas:3306/tienda_Ventas
       SPRING_DATASOURCE_USERNAME: user_devops
       SPRING_DATASOURCE_PASSWORD: password123
     depends_on:
@@ -29,7 +29,7 @@ services:
     build: ./back-despachos_springboot
     container_name: backend_despachos
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/base_datos_app
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-ventas:3306/tienda_Despachos
       SPRING_DATASOURCE_USERNAME: user_devops
       SPRING_DATASOURCE_PASSWORD: password123
     depends_on:
