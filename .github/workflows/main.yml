@@ -71,11 +71,16 @@ jobs:
         run: |
           set -e
 
+          ssh -i ~/.ssh/id_rsa \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              ***@*** "mkdir -p ~/proyectodevops"
+          
           scp -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            docker-compose.prod.yml \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              docker-compose.prod.yml \
+              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
 
       - name: Deploy stack in EC2
         run: |
