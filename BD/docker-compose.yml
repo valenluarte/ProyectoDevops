@@ -1,7 +1,9 @@
 services:
   DB-Despachos:
-    build: ./back-despachos_springboot
-    container_name: back-despachos_springboot
+    build:
+      context: ./BD/BD-Despachos
+      dockerfile: Dockerfile.prod
+    container_name: back-despachos_mysql_prod
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin123
@@ -14,8 +16,10 @@ services:
       - red_interna
 
   DB-Ventas:
-    build: ./back-ventas_springboot
-    container_name: back-ventas_springboot
+    build:
+      context: ./BD/BD-Ventas
+      dockerfile: Dockerfile.prod
+    container_name: back-ventas_mysql_prod
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin123
