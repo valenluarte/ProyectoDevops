@@ -1,7 +1,7 @@
 services:
   DB-Despachos:
-    build: ./back-Despacho_SpringBoot
-    container_name: back-Despachos_SpringBoot
+    build: ./back-despachos_springboot
+    container_name: back-despachos_springboot
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin123
@@ -14,8 +14,8 @@ services:
       - red_interna
 
   DB-Ventas:
-    build: ./back-Ventas_SpringBoot
-    container_name: back-Ventas_SpringBoot
+    build: ./back-ventas_springboot
+    container_name: back-ventas_springboot
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin123
