@@ -64,7 +64,7 @@ jobs:
               -o ServerAliveInterval=60 \
               -o ServerAliveCountMax=3 \
               ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
-              "mkdir -p ~/tienda" && break || sleep 10
+              "mkdir -p ~/proyectodevops" && break || sleep 10
           done
 
       - name: Copy docker-compose to EC2
