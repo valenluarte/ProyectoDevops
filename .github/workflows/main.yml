@@ -62,7 +62,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
-            "mkdir -p ~/tienda-videojuegos-backend"
+            "mkdir -p ~/tienda"
 
       - name: Copy docker-compose to EC2
         run: |
