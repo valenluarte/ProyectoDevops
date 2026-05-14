@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  # Base de Datos (Persistencia de datos IE3)
   db:
     image: postgres:15-alpine
     container_name: db_proyecto
@@ -14,48 +13,6 @@ services:
     networks:
       - red_interna
 
-
-  db-Despachos:
-    build: ./BD/BD-Despachos
-    container_name: back-despachos_springboot
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_DATABASE: tienda_Despachos
-    ports:
-      - "3307:3306"
-    volumes:
-      - inventario_data:/var/lib/mysql
-    networks:
-      - red_interna
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -padmin123 || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 40s
-
-  db-ventas:
-    build: ./BD/BD-Ventas
-    container_name: back-ventas_springboot
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_DATABASE: tienda_Ventas
-    ports:
-      - "3308:3306"
-    volumes:
-      - ventas_data:/var/lib/mysql
-    networks:
-      - red_interna
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -padmin123 || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 40s
-
-  # Backend Ventas (IE6)
   back-ventas:
     build: ./back-ventas_springboot
     container_name: backend_ventas
@@ -68,7 +25,6 @@ services:
     networks:
       - red_interna
 
-  # Backend Despachos (IE6)
   back-despachos:
     build: ./back-despachos_springboot
     container_name: backend_despachos
@@ -81,7 +37,6 @@ services:
     networks:
       - red_interna
 
-  # Frontend (IE5)
   frontend:
     build: ./FRONT_DESPACHO
     container_name: frontend_app
