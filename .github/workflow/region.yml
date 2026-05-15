@@ -1,0 +1,4 @@
+       - name: Test AWS credentials
+          run: |
+            aws sts get-caller-identity
+            aws sts get-caller-identity --region us-east-1 
