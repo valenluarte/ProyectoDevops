@@ -38,6 +38,7 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest
 
+     
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
