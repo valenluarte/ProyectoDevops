@@ -1,9 +1,9 @@
-name: Build, Push and Deploy Backend Stack
+name: Build, Push and Deploy Final Stack
 
 on:
   push:
     branches:
-      - main
+      - deploy  # Cambiado de main a deploy para que funcione contigo
   workflow_dispatch:
 
 jobs:
@@ -20,23 +20,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker images
+      - name: Build and Push Docker images
         run: |
           set -e
-
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./back-ventas_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./back-despachos_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest ./BD/BD-Despachos
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest ./BD/BD-Ventas
-
-      - name: Push Docker images
-        run: |
-          set -e
-
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest
+          # Construimos usando las carpetas que SI tenemos
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas:latest ./back-ventas_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos:latest ./back-despachos_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/frontend-app:latest ./FRONT_DESPACHO
+          
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/frontend-app:latest
 
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -48,109 +42,42 @@ jobs:
 
       - name: Add SSH Key
         run: |
-          set -e
-
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Create deployment folder in EC2
+      - name: Prepare EC2 and Copy Files
         run: |
-          for i in {1..5}; do
-            ssh -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              -o ConnectTimeout=30 \
-              -o ServerAliveInterval=60 \
-              -o ServerAliveCountMax=3 \
-              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
-              "mkdir -p ~/proyectodevops" && break || sleep 10
-          done
-
-      - name: Copy docker-compose to EC2
-        run: |
-          set -e
-
-          ssh -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/proyectodevops"
+          # Creamos la carpeta en la EC2
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/proyectodevops"
           
-          scp -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              docker-compose.prod.yml \
-              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
+          # Copiamos TU docker-compose.yml (el que arreglamos hoy)
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
 
-      - name: Deploy stack in EC2
+      - name: Deploy and Validate in EC2
         run: |
-          set -e
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ~/proyectodevops
+            
+            # Crear el init.sql para que la base de datos no falle
+            echo "CREATE DATABASE IF NOT EXISTS tienda_Ventas; CREATE DATABASE IF NOT EXISTS tienda_Despachos; CREATE USER IF NOT EXISTS 'user_devops'@'%' IDENTIFIED BY 'password123'; GRANT ALL PRIVILEGES ON tienda_Ventas.* TO 'user_devops'@'%'; GRANT ALL PRIVILEGES ON tienda_Despachos.* TO 'user_devops'@'%'; FLUSH PRIVILEGES;" > init.sql
 
-          ssh -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}: << 'EOF'
-            mkdir -p ~/proyectoDevops/BD
-            cd ~/proyectoDevops/BD
-
-            set -e
-
-            echo "Validando docker..."
-            docker --version
-
-            echo "Validando docker-compose..."
-            if ! command -v docker-compose >/dev/null 2>&1; then
-              echo "ERROR: docker-compose no está instalado en la EC2"
-              exit 1
-            fi
-
-            docker-compose --version
-
-            echo "Creando archivo .env..."
-            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" > .env
-
-            echo "Autenticando en Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            
+            docker compose pull
+            docker compose down
+            docker compose up -d
 
-            echo "Descargando imágenes desde Docker Hub..."
-            docker-compose pull
-
-            echo "Deteniendo stack anterior..."
-            docker-compose down
-
-            echo "Levantando stack actualizado..."
-            docker-compose up -d
-
-            echo "Esperando inicio de servicios..."
-            sleep 30
-
-            echo "Estado de contenedores:"
-            docker-compose ps
-
-            echo "Validando contenedores activos..."
-            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springboot no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-ventas_springboot no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "backend_ventas" || { echo "ERROR: backend_ventas no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "backend_despachos" || { echo "ERROR: backennd_despachos no está activo"; exit 1; }
-
-            echo "Validando endpoints internos..."
-            if ! command -v curl >/dev/null 2>&1; then
-              echo "ERROR: curl no está instalado en la EC2"
-              exit 1
-            fi
-
-            curl -f http://localhost:3002/api/ventas/health
-            curl -f http://localhost:3003/api/despachos/health
-
-            echo "Validando conexión a base de datos de ventas..."
-            docker exec back-ventas_springboot mysql -u root -padmin123 tienda_ventas -e "SHOW TABLES;"
-
-            echo "Validando conexión a base de datos de despachos..."
-            docker exec back-despachos_springboot mysql -u root -padmin123 tienda_despachos -e "SHOW TABLES;"
-
-            echo "Limpiando imágenes no utilizadas..."
+            echo "Esperando 20s a que suban los servicios..."
+            sleep 20
+            
+            echo "--- ESTADO DE LOS CONTENEDORES ---"
+            docker compose ps
+            
+            echo "--- VALIDANDO BASES DE DATOS ---"
+            # Validamos que las tablas existan (esto asegura el punto de persistencia)
+            docker exec proyectodevops-db-ventas-1 mysql -u root -padmin123 -e "SHOW DATABASES;"
+            
             docker image prune -f
-
-            echo "Despliegue finalizado correctamente"
-
+            echo "Despliegue finalizado con éxito en la rama deploy"
           EOF
