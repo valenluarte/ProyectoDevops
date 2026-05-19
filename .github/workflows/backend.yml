@@ -62,7 +62,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
-            "mkdir -p ~/tienda-videojuegos-backend"
+            "mkdir -p ~/proyectodevops-backend"
 
       - name: Copy docker-compose to EC2
         run: |
@@ -85,7 +85,7 @@ jobs:
 
             set -e
 
-            cd ~/tienda-videojuegos-backend
+            cd ~/proyectodevops
 
             echo "Validando docker..."
             docker --version
@@ -135,10 +135,10 @@ jobs:
             curl -f http://localhost:3003/api/despachos/health
 
             echo "Validando conexión a base de datos de ventas..."
-            docker exec db-ventas-videojuegos mysql -u root -padmin123 tienda_videojuegos_ventas -e "SHOW TABLES;"
+            docker exec backend_ventas mysql -u root -padmin123 backend_ventas -e "SHOW TABLES;"
 
             echo "Validando conexión a base de datos de inventario..."
-            docker exec db-inventario-videojuegos mysql -u root -padmin123 tienda_videojuegos_inventario -e "SHOW TABLES;"
+            docker exec backend_despachos mysql -u root -padmin123 backend_despachos -e "SHOW TABLES;"
 
             echo "Limpiando imágenes no utilizadas..."
             docker image prune -f
