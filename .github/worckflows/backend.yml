@@ -24,20 +24,20 @@ jobs:
         run: |
           set -e
 
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend_despachos:latest ./back-despachos_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend_ventas:latest ./back-ventas_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/db-inventario-videojuegos:latest ./BD/BD-Ventas
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/db-ventas-videojuegos:latest ./BD/BD-Despachos
-
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./back-ventas_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./back-despachos_springboot
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest ./BD/BD-Despachos
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest ./BD/BD-Ventas
+          
       - name: Push Docker images
         run: |
           set -e
 
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend_despachos:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend_ventas:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/db-inventario-videojuegos:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/db-ventas-videojuegos:latest
-
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest
+          
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -120,10 +120,10 @@ jobs:
             docker-compose ps
 
             echo "Validando contenedores activos..."
-            docker ps --format '{{.Names}}' | grep -q "db-inventario-videojuegos" || { echo "ERROR: db-inventario-videojuegos no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "db-ventas-videojuegos" || { echo "ERROR: db-ventas-videojuegos no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "msv-ventas-videojuegos" || { echo "ERROR: msv-ventas-videojuegos no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "msv-despacho-videojuegos" || { echo "ERROR: msv-despacho-videojuegos no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springboot no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-ventas_springboot no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "backend_ventas" || { echo "ERROR: backend_ventas no está activo"; exit 1; }
+            docker ps --format '{{.Names}}' | grep -q "backend_despachos" || { echo "ERROR: backennd_despachos no está activo"; exit 1; }
 
             echo "Validando endpoints internos..."
             if ! command -v curl >/dev/null 2>&1; then
