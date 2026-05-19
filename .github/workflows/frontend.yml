@@ -24,28 +24,21 @@ jobs:
         run: |
           set -e
 
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest ./back-ventas_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest ./back-despachos_springboot
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest ./BD/BD-Despachos
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest ./BD/BD-Ventas
-
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/frontend_app:latest ./back-ventas_springboot
+          
       - name: Push Docker images
         run: |
           set -e
 
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-ventas_springboot:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/back-despachos_springboot:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_despachos:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tienda_ventas:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/frontend_app:latest
           
-     
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-          
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Add SSH Key
         run: |
@@ -57,31 +50,23 @@ jobs:
 
       - name: Create deployment folder in EC2
         run: |
-          for i in {1..5}; do
-            ssh -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              -o ConnectTimeout=30 \
-              -o ServerAliveInterval=60 \
-              -o ServerAliveCountMax=3 \
-              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
-              "mkdir -p ~/proyectodevops" && break || sleep 10
-          done
+          set -e
+
+          ssh -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
+            "mkdir -p ~/tienda-videojuegos-backend"
 
       - name: Copy docker-compose to EC2
         run: |
           set -e
 
-          ssh -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/proyectodevops"
-          
           scp -i ~/.ssh/id_rsa \
-              -o StrictHostKeyChecking=no \
-              -o UserKnownHostsFile=/dev/null \
-              docker-compose.prod.yml \
-              ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            docker-compose.prod.yml \
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
 
       - name: Deploy stack in EC2
         run: |
@@ -90,11 +75,11 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}: << 'EOF'
-            mkdir -p ~/proyectoDevops/BD
-            cd ~/proyectoDevops/BD
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} << EOF
 
             set -e
+
+            cd ~/tienda-videojuegos-backend
 
             echo "Validando docker..."
             docker --version
@@ -129,11 +114,7 @@ jobs:
             docker-compose ps
 
             echo "Validando contenedores activos..."
-            docker ps --format '{{.Names}}' | grep -q "back-despachos_springboot" || { echo "ERROR: back-despachos_springboot no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "back-ventas_springboot" || { echo "ERROR: back-ventas_springboot no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "backend_ventas" || { echo "ERROR: backend_ventas no está activo"; exit 1; }
-            docker ps --format '{{.Names}}' | grep -q "backend_despachos" || { echo "ERROR: backennd_despachos no está activo"; exit 1; }
-
+            docker ps --format '{{.Names}}' | grep -q "frontend_app || { echo "ERROR: frontend_app no está activo"; exit 1; }
             echo "Validando endpoints internos..."
             if ! command -v curl >/dev/null 2>&1; then
               echo "ERROR: curl no está instalado en la EC2"
@@ -141,17 +122,11 @@ jobs:
             fi
 
             curl -f http://localhost:3002/api/ventas/health
-            curl -f http://localhost:3003/api/despachos/health
-
-            echo "Validando conexión a base de datos de ventas..."
-            docker exec back-ventas_springboot mysql -u root -padmin123 tienda_ventas -e "SHOW TABLES;"
-
-            echo "Validando conexión a base de datos de despachos..."
-            docker exec back-despachos_springboot mysql -u root -padmin123 tienda_despachos -e "SHOW TABLES;"
 
             echo "Limpiando imágenes no utilizadas..."
             docker image prune -f
 
             echo "Despliegue finalizado correctamente"
 
+            
           EOF
