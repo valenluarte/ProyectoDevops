@@ -72,7 +72,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             docker-compose.prod.yml \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_Backend }}:~/tienda-videojuegos-backend/docker-compose.yml
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_Backend }}:~/proyectodevops/docker-compose.yml
 
       - name: Deploy stack in EC2
         run: |
