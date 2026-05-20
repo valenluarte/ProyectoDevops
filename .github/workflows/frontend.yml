@@ -3,7 +3,7 @@ name: Build, Push and Deploy Backend Stack
 on:
   push:
     branches:
-      - main
+      - proyectodevops
   workflow_dispatch:
 
 jobs:
@@ -45,7 +45,7 @@ jobs:
           set -e
 
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_KEY_Frontend }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
       - name: Create deployment folder in EC2
