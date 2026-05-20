@@ -61,7 +61,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_Backend }} \
             "mkdir -p ~/proyectodevops-backend"
 
       - name: Copy docker-compose to EC2
@@ -72,7 +72,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             docker-compose.prod.yml \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/tienda-videojuegos-backend/docker-compose.yml
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_Backend }}:~/tienda-videojuegos-backend/docker-compose.yml
 
       - name: Deploy stack in EC2
         run: |
@@ -81,7 +81,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} << EOF
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_Backend }} << EOF
 
             set -e
 
