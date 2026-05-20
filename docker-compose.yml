@@ -54,17 +54,6 @@ services:
     networks:
       - red_interna
 
-  frontend:
-    build: ./FRONT_DESPACHO
-    container_name: frontend_app
-    ports:
-      - "80:80"
-    depends_on:
-      - back-ventas
-      - back-despachos
-    networks:
-      - red_interna
-
 networks:
   red_interna:
     driver: bridge
