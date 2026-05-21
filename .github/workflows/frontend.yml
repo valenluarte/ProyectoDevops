@@ -1,4 +1,4 @@
-name: Build, Push and Deploy Backend Stack
+name: Build, Push and Deploy Frontend
 
 on:
   push:
@@ -55,7 +55,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_FRONTEND }} \
             "mkdir -p ~/tienda-videojuegos-backend"
 
       - name: Copy docker-compose to EC2
@@ -66,7 +66,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             docker-compose.prod.yml \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }}:~/proyectodevops/docker-compose.yml
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_FRONTEND }}:~/proyectodevops/docker-compose.yml
 
       - name: Deploy stack in EC2
         run: |
@@ -75,7 +75,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} << EOF
+            ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_FRONTEND }} << EOF
 
             set -e
 
