@@ -65,7 +65,7 @@ jobs:
           scp -i ~/.ssh/id_rsa \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            docker-compose.prod.yml \
+            docker-compose.yml \
             ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST_FRONTEND }}:~/proyectodevops/docker-compose.yml
 
       - name: Deploy stack in EC2
